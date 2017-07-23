@@ -1,0 +1,17 @@
+{
+  "name": "kinect2bvh",
+  "version": "0.0.1",
+  "description": "Convert data from ReadySaltedCode KinectJSON server to BVH format",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "author": "ReadySaltedCode CiC",
+  "license": "GPL-3.0",
+  "devDependencies": {
+    "mocha": "^3.4.2"
+  },
+  "dependencies": {
+    "three": "^0.86.0"
+  }
+}
