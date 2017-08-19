@@ -19,57 +19,32 @@ class SkeletonConverter {
 		var isp2 = this.INDENT_BY.repeat(indent+1);
 		var definition = "";
 		const self = this;
-		console.log("capturing "+ subskeleton2.name);
-		if (subskeleton2 === null) {
-			// damn! we need two joints to determine the root limb, but...
-			// once we've descended into a two-joint hierarchy we're outside the
-			// ROOT tag in the BVH
-			// Logically we have a graph like this
-			// (1)---[root]----(start)---[other]----(2)
-			// and by the time we've descended into subskeleton1=start, subskeleton2=1
-			// how can we include 2?
-			// is it true that the root is the only place where this happens?
-			// yes, because it's the only place that travels in two directions from
-			// the same LIMB
-			// options:
-			//  - lookahead here
-			//  - preprocess the skeleton
-			//  - make the ROOT operation go into reverse
-			//  - handle ROOT and children in one go
-
-			// first process the root
-			var subskeleton2name = subskeleton1.name === subskeleton1.rootLimbJoints[0]?subskeleton1.rootLimbJoints[1]:subskeleton1.rootLimbJoints[0];
-			subskeleton2 = subskeleton1.getSubSkeleton(subskeleton2name);
-
-			definition += "ROOT "+subskeleton2.translatedName()+"\n";
-			definition += "{\n";
-			definition += writeOffset(1,joints[subskeleton2.name].Position,joints[subskeleton1.name].Position ,this.INDENT_BY);
-			definition += "  CHANNELS 6 Xposition Yposition Zposition Zrotation Xrotation Yrotation\n";
-			subskeleton2.children().forEach((subskeleton3) => {
-				definition += this.recursivelyCaptureLimbs(subskeleton2, subskeleton3,joints, joints[subskeleton2.name].Position,2);
-			});
-			definition += "}\n";
-
-		} else if (subskeleton1.isRootWith(subskeleton2)) {
+		console.log("capturing "+ subskeleton1.name);
+		if (subskeleton1 === null) {
+			// this is the root
 			// Note that we need to go into reverse as well as forward for the root (see above)
 			definition += "ROOT "+subskeleton2.translatedName()+"\n";
 			definition += "{\n";
-			definition += writeOffset(1, parentOffset,this.INDENT_BY);
+			definition += writeOffset(1, {X:0,Y:0,Z:0}, {X:0,Y:0,Z:0},this.INDENT_BY);
 			definition += "  CHANNELS 6 Xposition Yposition Zposition Zrotation Xrotation Yrotation\n";
 			subskeleton2.children().forEach((subskeleton3) => {
 				definition += this.recursivelyCaptureLimbs(subskeleton2, subskeleton3,joints, joints[subskeleton2.name].Position,2);
 			});
 			definition += "}\n";
-		} else if (subskeleton2.isEndSite()) {
+		} else if (subskeleton2 === null) {
 			definition += isp +"End Site\n";
 			definition += isp +"{\n";
-			definition += writeOffset(indent+1, joints[subskeleton2.name].Position, joints[subskeleton2.name].Position,self.INDENT_BY);
+			console.log("J:"+subskeleton1.name+", P:"+JSON.stringify(joints[subskeleton1.name].Position));
+			definition += writeOffset(indent+1, joints[subskeleton1.name].Position, parentOffset,self.INDENT_BY);
 			definition += isp +"}\n";
 		} else {
 			definition += isp+"JOINT "+subskeleton2.translatedName() + "\n";
 			definition += isp +"{\n";
 			definition += writeOffset(indent+1, joints[subskeleton2.name].Position, parentOffset,self.INDENT_BY);
 			definition += isp2 + "CHANNELS 3 Zrotation Xrotation Yrotation\n";
+			if (subskeleton2.isEndSite()) {
+				definition += self.recursivelyCaptureLimbs(subskeleton2,null, joints, joints[subskeleton1.name].Position, indent +1);
+			}
 			subskeleton2.children().forEach(function(subskeleton3) {
 				definition += self.recursivelyCaptureLimbs(subskeleton2,subskeleton3, joints, joints[subskeleton2.name].Position, indent +1);
 			});
@@ -88,9 +63,9 @@ class SkeletonConverter {
 		}
 		var joints = this.originalJoints;
 
+		console.log("XXX "+ this.skeletonModel);
 		var root = this.skeletonModel;
 		var rootOffset = joints[root.name].Position;
-		const self = this;
 
 		var definition = "HIERARCHY\n";
 		definition += this.recursivelyCaptureLimbs(root,null,joints, rootOffset,2);
