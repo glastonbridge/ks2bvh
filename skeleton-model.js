@@ -35,7 +35,11 @@ class SkeletonModel {
 	}
 	children() {
 		const parent = this;
-		return Object.keys(this.tree).map(function(j) {return parent.getSubSkeleton(j)});
+		return this.getChildNames().map(function(j) {return parent.getSubSkeleton(j)});
+	}
+
+	getChildNames() {
+		return Object.keys(this.tree);
 	}
 
 	isEndSite() {

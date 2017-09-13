@@ -9,7 +9,7 @@ class Kinect2SkeletonModel extends SkeletonModel {
 	constructor() {
 		super({
 			name: "SpineMid",
-			tree: KINECT2_SKELETON_MODEL,
+			tree: KINECT2_SKELETON_MODEL_SIMPLIFIED,
 			jointTranslator: mapKinect2toBVH,
 			rootLimbJoints: ["SpineMid","SpineBase"]
 		});
@@ -22,17 +22,19 @@ KINECT2_SKELETON_MODEL =
 		"Neck": {
 			"Head": {}
 		},
-		"ShoulderLeft": {
-			"ElbowLeft": {
-				"WristLeft": {
-					"HandLeft": {}
+		"SpineShoulder": {
+			"ShoulderLeft": {
+				"ElbowLeft": {
+					"WristLeft": {
+						"HandLeft": {}
+					}
 				}
-			}
-		},
-		"ShoulderRight": {
-			"ElbowRight": {
-				"WristRight": {
-					"HandRight": {}
+			},
+			"ShoulderRight": {
+				"ElbowRight": {
+					"WristRight": {
+						"HandRight": {}
+					}
 				}
 			}
 		}
@@ -55,7 +57,6 @@ KINECT2_SKELETON_MODEL =
 //in the BVH side are the limbs that relate to the joint you would land on while
 //traversing from the root outward.
 KINECT2_TO_BVH_LIMB_NAMES = {
-    "SpineMid": "Spine",
     "SpineBase": "Hips",
     "SpineShoulder": "Chest",
     "Neck": "Neck",
@@ -80,9 +81,14 @@ function mapKinect2toBVH(k2name) {
 	return KINECT2_TO_BVH_LIMB_NAMES[k2name];
 }
 
-KINECT2_SKELETON_MODEL_SIMPLIFIED = Object.keys(KINECT2_SKELETON_MODEL).reduce((p, item)=>{
-	p[item] = {};
-	return p;
-},{});
+function reductio(depth, obj) {
+    if (depth === 0) return {};
+    else return Object.keys(obj).reduce((p, item)=>{
+    	p[item]=reductio(depth-1,obj[item]);
+    	return p;
+    },{});
+}
+
+KINECT2_SKELETON_MODEL_SIMPLIFIED = reductio(3,KINECT2_SKELETON_MODEL);
 
 module.exports = Kinect2SkeletonModel;

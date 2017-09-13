@@ -2,7 +2,7 @@
 // jshint esversion: 6
 
 const SkeletonConverter = require('./skeleton-converter');
-const Kinect2SkeletonModel = require('./kinect2-skeleton-model0');
+const Kinect2SkeletonModel = require('./kinect2-skeleton-model');
 const fs = require('fs');
 const process = require('process');
 
