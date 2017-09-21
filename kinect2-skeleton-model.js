@@ -38,16 +38,20 @@ KINECT2_SKELETON_MODEL =
 		}
 	},
 	"SpineBase": {
-		"KneeLeft": {
-			"AnkleLeft": {
-				"FootLeft": {}
-			}
-		},
-		"KneeRight": {
-			"AnkleRight": {
-				"FootRight": {}
-			}
-		}
+        "HipLeft": {
+    		"KneeLeft": {
+    			"AnkleLeft": {
+    				"FootLeft": {}
+    			}
+    		},
+        },
+        "HipRight": {
+    		"KneeRight": {
+    			"AnkleRight": {
+    				"FootRight": {}
+    			}
+    		}
+        }
 	}
 };
 
@@ -74,6 +78,8 @@ KINECT2_TO_BVH_LIMB_NAMES = {
     "KneeRight": "RightUpLeg",
     "AnkleRight": "RightLowLeg",
     "FootRight": "RightFoot",
+    "HipLeft": "LeftHip",
+    "HipRight": "RightHip"
 };
 
 function mapKinect2toBVH(k2name) {
