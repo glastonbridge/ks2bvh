@@ -1,7 +1,7 @@
 // jshint esversion: 6
 
-const TwoJointSkeletonModel = require('../two-joint-skeleton-model');
-const MultiJointSkeletonModel = require('../multi-joint-skeleton-model');
+const TwoJointSkeletonModel = require('./two-joint-skeleton-model');
+const MultiJointSkeletonModel = require('./multi-joint-skeleton-model');
 const SkeletonConverter = require('../skeleton-converter');
 const assert = require('assert');
 describe('Convert', function() {
