@@ -1,6 +1,6 @@
 // jshint esversion: 6
 
-const SkeletonModel = require('./skeleton-model');
+const SkeletonModel = require('../skeleton-model');
 
 /**
  * A simplified kinectJSON model for testing

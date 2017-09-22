@@ -89,15 +89,34 @@ console.log(bvhString);
 
 		const simpleBVHFile =
 `HIERARCHY
-    End Site
+ROOT shoulder
+{
+  OFFSET 0 0 0
+  CHANNELS 6 Xposition Yposition Zposition Zrotation Xrotation Yrotation
+    JOINT LeftArm
     {
-      OFFSET 0 0 0
+      OFFSET -1 0 0
+      CHANNELS 3 Zrotation Xrotation Yrotation
+      End Site
+      {
+        OFFSET 0 1 0
+      }
     }
-MOTION
+    JOINT RightArm
+    {
+      OFFSET 1 0 0
+      CHANNELS 3 Zrotation Xrotation Yrotation
+      End Site
+      {
+        OFFSET 0 1 0
+      }
+    }
+}\n` +
+`MOTION
 Frames: 2
 Frame Time: .0083333
 0 0 0 0 0 0 0 0 0 0 0 0 \n` +
-"0 0 0 -89.99999999999999 0 0 0 0 0 0 0 0 ";
+`0 0 0 -89.99999999999999 0 0 0 0 0 0 0 0 `;
 
 		assert.equal(simpleBVHFile,bvhString);
   });
