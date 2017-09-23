@@ -1,9 +1,16 @@
 // jshint esversion: 6
 
-const THREE = require('three');
-const RotationalFrame = require('./rotational-skeleton-frame');
+import THREE = require('three');
 
-class SkeletonConverter {
+import SkeletonModel from "./SkeletonModel";
+
+import {SkeletonFrame, KinectJoint} from "./KinectTypes";
+
+export default class SkeletonConverter {
+    INDENT_BY : string;
+    skeletonModel : SkeletonModel;
+    goodFrames : Array<string>;
+    originalJoints? : {[JointName: string] : KinectJoint};
 	constructor(options) {
 		this.INDENT_BY = "  ";
 		this.skeletonModel = options.skeletonModel;
@@ -56,7 +63,7 @@ class SkeletonConverter {
 		return definition;
 	}
 
-	captureInitialJoints(frame) {
+	captureInitialJoints(frame : SkeletonFrame) {
 		this.originalJoints = dictionarifyJoints(frame.Skeletons[0].Joints);
 	}
 
@@ -80,7 +87,7 @@ class SkeletonConverter {
 	}
 
 
-    recursivelyMoveJoints(subskeleton, joints, parentRotation) {
+    recursivelyMoveJoints(subskeleton, joints, parentRotation?) {
 		var definition = "";
 		const self = this;
 		if (!parentRotation) parentRotation = new THREE.Quaternion();
@@ -141,7 +148,6 @@ class SkeletonConverter {
 	}
 }
 
-module.exports = SkeletonConverter;
 
 // Utility functions
 
@@ -169,6 +175,9 @@ function getNormalVec (jointStart, jointEnd1, jointEnd2, jointDictionary) {
 }
 
 function getJointVec (jointStart, jointEnd, jointDictionary) {
+    console.log(jointStart + " => "+ jointEnd);
+    console.log(jointDictionary);
+    console.log("-----------");
 	let posStart = jointDictionary[jointStart].Position;
 	let posEnd = jointDictionary[jointEnd].Position;
 	var jointVec = new THREE.Vector3(posEnd.X-posStart.X, posEnd.Y-posStart.Y, posEnd.Z-posStart.Z).normalize();
@@ -178,7 +187,7 @@ function getJointVec (jointStart, jointEnd, jointDictionary) {
 }
 
 
-function dictionarifyJoints(joints) {
+function dictionarifyJoints(joints : Array<KinectJoint>) : { [jointName: string]: KinectJoint } {
 	var jointDictionary = {};
 	joints.forEach(function(joint) {
 		jointDictionary[joint.JointType] = joint;

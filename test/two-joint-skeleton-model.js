@@ -1,19 +1,18 @@
+"use strict";
 // jshint esversion: 6
-
-const SkeletonModel = require('../skeleton-model');
-
+Object.defineProperty(exports, "__esModule", { value: true });
+const SkeletonModel_1 = require("../build/SkeletonModel");
 /**
  * A simplified kinectJSON model for testing
  */
-class SimpleSkeletonModel extends SkeletonModel {
-	constructor() {
-		super({
-			name: "shoulder",
-			tree: {"hand":{}},
-			jointTranslator: function(name) {return name;}, // no-op
-			rootLimbJoints: ["shoulder","hand"]
-		});
-	}
+class TwoJointSkeletonModel extends SkeletonModel_1.default {
+    constructor() {
+        super({
+            name: "shoulder",
+            tree: { "hand": {} },
+            jointTranslator: function (name) { return name; }
+        });
+    }
 }
-
-module.exports = SimpleSkeletonModel;
+exports.default = TwoJointSkeletonModel;
+//# sourceMappingURL=two-joint-skeleton-model.js.map

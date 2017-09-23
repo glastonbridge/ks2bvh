@@ -1,9 +1,16 @@
 // jshint esversion: 6
 
-const THREE = require('three');
-const PositionalFrame = require('./positional-skeleton-frame');
+//TODO: we never finished migrating to this way of working
 
-class RotationalFrame {
+const THREE = require('three');
+import PositionalFrame from './positional-skeleton-frame';
+import {KinectSkeleton} from "./KinectTypes";
+
+export class RotationalFrame {
+    private originalPosition : KinectSkeleton;
+    private framePosition : KinectSkeleton;
+    private parentRotation : any; // TODO: get a three.js type package
+    private rotationQuaternion : any;
 	constructor(originalPosition, framePosition, parentRotation) {
 		if (!parentRotation) {
 			parentRotation = new THREE.Quaternion();
@@ -12,10 +19,10 @@ class RotationalFrame {
 		this.framePosition = framePosition;
 		this.parentRotation = new THREE.Quaternion();
 		this.parentRotation.copy(parentRotation);
-		this.rotationQuaternion = this.getRotationQuaternion();
-		this.parentRotation.multiply(this.rotationQuaternion);
+		//this.rotationQuaternion = this.getRotationQuaternion();
+		//this.parentRotation.multiply(this.rotationQuaternion);
 	}
-
+/*
 	getRotationQuaternion() {
 		this.frameJointPosition.applyQuaternion(this.parentRotation.inverse());
 
@@ -62,9 +69,7 @@ class SkeletonFrameFactory {
 	}
 	getRotationalFrame(joints) {
 		return new RotationalFrame(getOriginalPositionalFrame(), getPositionalFrame());
-	}
+	}*/
 }
 
-RotationalFrame.Factory = SkeletonFrameFactory;
-
-module.exports = RotationalFrame;
+//RotationalFrame.Factory = SkeletonFrameFactory;

@@ -10,8 +10,7 @@ class Kinect2SkeletonModel extends SkeletonModel {
 		super({
 			name: "SpineMid",
 			tree: KINECT2_SKELETON_MODEL,
-			jointTranslator: mapKinect2toBVH,
-			rootLimbJoints: ["SpineMid","SpineBase"]
+			jointTranslator: mapKinect2toBVH
 		});
 	}
 }

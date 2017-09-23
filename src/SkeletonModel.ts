@@ -1,11 +1,21 @@
-// jshint esversion: 6
+
+export interface SkeletonConfiguration {
+    name : string,
+    jointTranslator: Function,
+    tree: object,
+    rootLimb: string
+}
 
 /**
  * skeletonConfiguration.tree should be an object tree in the format {limbName: {childLimbName1: {...}}}
  * Note that the internal skeleton model is based on the Kinect format, which is interested primarily
  * in JOINTS (vertices), whereas the BVH is interested in LIMBS (edges)
  */
-class SkeletonModel {
+export default class SkeletonModel {
+    name: string;
+    tree: object;
+    jointTranslator: Function;
+    rootLimb: string;
 	constructor(skeletonConfiguration) {
 		if (!skeletonConfiguration || typeof skeletonConfiguration !== "object") {
 			throw new Error("You must pass in a configuration object to SkeletonModel constructor");
@@ -26,8 +36,7 @@ class SkeletonModel {
 		return new SkeletonModel({
 			name:jointName,
 			tree: this.tree[jointName],
-			jointTranslator: this.jointTranslator,
-			rootLimbJoints: this.rootLimbJoints
+			jointTranslator: this.jointTranslator
 		});
 	}
 	translatedName() {
@@ -46,10 +55,4 @@ class SkeletonModel {
 		return Object.keys(this.tree).length == 0;
 	}
 
-	isRootWith(limb) {
-		return this.rootLimbJoints.includes(limb.name) && this.rootLimbJoints.includes(this.name);
-	}
-
 }
-
-module.exports= SkeletonModel;

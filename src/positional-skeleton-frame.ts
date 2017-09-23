@@ -1,6 +1,8 @@
 //jshint esversion:6
 
-const THREE = require('three');
+import THREE = require('three');
+import SkeletonModel from "./SkeletonModel";
+import {KinectJoint} from "./KinectTypes";
 
 /**
  * Sample usage:
@@ -11,8 +13,10 @@ const THREE = require('three');
  *   }
  *   recurseFrame(frame)
  */
-class PositionalFrame {
-	constructor(skeletonModel,frameJoints) {
+export default class PositionalFrame {
+    skeletonModel: SkeletonModel;
+    frameJoints : Array<KinectJoint>;
+	constructor(skeletonModel : SkeletonModel,frameJoints : Array<KinectJoint>) {
 		this.skeletonModel = skeletonModel;
 		this.frameJoints = frameJoints;
 	}
@@ -25,7 +29,7 @@ class PositionalFrame {
 	}
 
 	getJointPosition() {
-		var jointPosition = this.joints[this.skeletonModel.name].Position;
+		var jointPosition = this.frameJoints[this.skeletonModel.name].Position;
 		return new THREE.Vector3(
 			jointPosition.X,
 			jointPosition.Y,
@@ -61,5 +65,3 @@ class PositionalFrame {
 		return this.skeletonModel.getChildNames();
 	}
 }
-
-module.exports = PositionalFrame;
