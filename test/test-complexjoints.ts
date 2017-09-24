@@ -2,14 +2,14 @@ import {  test } from "mocha-typescript";
 
 require("source-map-support").install();
 
-import MetaJointSkeletonModel from './metajoint-skeleton-model';
+import ComplexJointSkeletonModel from './complexjoint-skeleton-model';
 import SkeletonConverter from '../build/SkeletonConverter';
 import {SkeletonFrame} from "../build/KinectTypes";
 import * as assert from "assert";
 
 describe('Convert', () => {
   xit('should convert a rotation with several joints to an average of their euclidian position', function() {
-		let skeletonModel = new MetaJointSkeletonModel();
+		let skeletonModel = new ComplexJointSkeletonModel();
 		let converter = new SkeletonConverter({skeletonModel: skeletonModel});
         // rotate body 90 degree turn
 		let jsonSkeletons : Array<SkeletonFrame> = [{

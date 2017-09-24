@@ -36,7 +36,7 @@ export default class SkeletonConverter {
 		if (parent === null) {
 			// this is the root
 			// Note that we need to go into reverse as well as forward for the root (see above)
-			definition += "ROOT "+subskeleton.translatedName()+"\n";
+			definition += "ROOT "+subskeleton.translatedPoints()[0]+"\n";
 			definition += "{\n";
 			definition += writeOffset(1, {X:0,Y:0,Z:0}, {X:0,Y:0,Z:0},this.INDENT_BY);
 			definition += "  CHANNELS 6 Xposition Yposition Zposition Zrotation Xrotation Yrotation\n";
@@ -51,7 +51,7 @@ export default class SkeletonConverter {
 			definition += writeOffset(indent+1, joints[subskeleton.name].Position, parentOffset,self.INDENT_BY);
 			definition += isp +"}\n";
 		} else {
-			definition += isp+"JOINT "+subskeleton.translatedName() + "\n";
+			definition += isp+"JOINT "+subskeleton.translatedPoints()[0] + "\n";
 			definition += isp +"{\n";
 			definition += writeOffset(indent+1, joints[subskeleton.name].Position, parentOffset,self.INDENT_BY);
 			definition += isp2 + "CHANNELS 3 Zrotation Xrotation Yrotation\n";
@@ -175,9 +175,6 @@ function getNormalVec (jointStart, jointEnd1, jointEnd2, jointDictionary) {
 }
 
 function getJointVec (jointStart, jointEnd, jointDictionary) {
-    console.log(jointStart + " => "+ jointEnd);
-    console.log(jointDictionary);
-    console.log("-----------");
 	let posStart = jointDictionary[jointStart].Position;
 	let posEnd = jointDictionary[jointEnd].Position;
 	var jointVec = new THREE.Vector3(posEnd.X-posStart.X, posEnd.Y-posStart.Y, posEnd.Z-posStart.Z).normalize();
