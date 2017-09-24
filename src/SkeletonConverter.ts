@@ -6,11 +6,15 @@ import SkeletonModel from "./SkeletonModel";
 
 import {SkeletonFrame, KinectJoint} from "./KinectTypes";
 
+export interface JointMap {
+    [other: string] : KinectJoint
+}
+
 export default class SkeletonConverter {
     INDENT_BY : string;
     skeletonModel : SkeletonModel;
     goodFrames : Array<string>;
-    originalJoints? : {[JointName: string] : KinectJoint};
+    originalJoints? : JointMap;
 	constructor(options) {
 		this.INDENT_BY = "  ";
 		this.skeletonModel = options.skeletonModel;
@@ -174,7 +178,9 @@ function getNormalVec (jointStart, jointEnd1, jointEnd2, jointDictionary) {
     return norm.normalize();
 }
 
-function getJointVec (jointStart, jointEnd, jointDictionary) {
+function getJointVec (jointStart: string, jointEnd: string, jointDictionary: JointMap) {
+    if (!jointDictionary[jointStart]) throw new Error("Start joint "+jointStart+" does not exist");
+    if (!jointDictionary[jointEnd]) throw new Error("End joint "+jointEnd+" does not exist");
 	let posStart = jointDictionary[jointStart].Position;
 	let posEnd = jointDictionary[jointEnd].Position;
 	var jointVec = new THREE.Vector3(posEnd.X-posStart.X, posEnd.Y-posStart.Y, posEnd.Z-posStart.Z).normalize();
@@ -184,7 +190,7 @@ function getJointVec (jointStart, jointEnd, jointDictionary) {
 }
 
 
-function dictionarifyJoints(joints : Array<KinectJoint>) : { [jointName: string]: KinectJoint } {
+function dictionarifyJoints(joints : Array<KinectJoint>) : JointMap {
 	var jointDictionary = {};
 	joints.forEach(function(joint) {
 		jointDictionary[joint.JointType] = joint;
