@@ -7,14 +7,18 @@ import SkeletonModel from "../build/SkeletonModel";
  */
 export default class ComplexJointSkeletonModel extends SkeletonModel {
 	constructor() {
+        let myTree = {"RightUpLeg":{},"LeftUpLeg":{}, "Spine":{}};
 		super({
 			name: "Hips",
-			tree: {"RightUpLeg":{},"LeftUpLeg":{}, "Spine":{}},
+			tree: myTree,
 			jointTranslator: function(name) {
-                if      (name == "Hips")    return ["HipLeft","HipRight","SpineBottom"];
-                else if (name == "Spine")   return ["SpineBottom", "SpineMid"];
-                else                        return [name];
-            } // no-op
+                if      (name == "Hips")    return ["SpineBottom","LeftHip","RightHip"];
+                else if (name == "Spine")   return ["SpineBottom", "SpineTop"];
+                else if (name == "RightUpLeg")   return ["RightHip", "RightKnee"];
+                else if (name == "LeftUpLeg")   return ["LeftHip", "LeftKnee"];
+                else                        return [];
+            },
+            rootLimb: "Hips"
 		});
 	}
 }

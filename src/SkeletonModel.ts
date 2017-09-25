@@ -2,7 +2,8 @@
 export interface SkeletonConfiguration {
     name : string,
     jointTranslator: (name: string)=>Array<string>,
-    tree: object
+    tree: object,
+    rootLimb : string
 }
 
 /**
@@ -18,12 +19,14 @@ export interface SkeletonConfiguration {
  */
 export default class SkeletonModel {
     name: string;
+    rootLimb: string;
     tree: object;
     jointTranslator: (string)=>Array<string>;
 	constructor(skeletonConfiguration : SkeletonConfiguration) {
 		this.name = skeletonConfiguration.name;
 		this.tree = skeletonConfiguration.tree || {};
 		this.jointTranslator = skeletonConfiguration.jointTranslator;
+        this.rootLimb = skeletonConfiguration.rootLimb;
 	}
 	getSubSkeleton(jointName) {
 		if (!this.tree[jointName]) {
@@ -32,7 +35,8 @@ export default class SkeletonModel {
 		return new SkeletonModel({
 			name:jointName,
 			tree: this.tree[jointName],
-			jointTranslator: this.jointTranslator
+			jointTranslator: this.jointTranslator,
+            rootLimb: this.rootLimb
 		});
 	}
 	translatedPoints() {
@@ -50,5 +54,8 @@ export default class SkeletonModel {
 	isEndSite() {
 		return Object.keys(this.tree).length == 0;
 	}
+    isRoot() {
+        return this.name == this.rootLimb;
+    }
 
 }

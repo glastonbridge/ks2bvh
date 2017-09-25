@@ -10,7 +10,8 @@ export default class TwoJointSkeletonModel extends SkeletonModel {
 		super({
 			name: "shoulder",
 			tree: {"hand":{}},
-			jointTranslator: function(name :string) : Array<string> {return [name];}
+			jointTranslator: function(name :string) : Array<string> {return [name];},
+            rootLimb: "shoulder"
 		});
 	}
 }
