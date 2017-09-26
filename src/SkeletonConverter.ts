@@ -101,20 +101,22 @@ export default class SkeletonConverter {
         } else if (bones.length ===1) {
             throw new Error("Bones have a minimum of two ends. "+subskeleton.name+" had none.");
         } else if (bones.length ===2) {
-            let subsub = bones[0];
             rot = getRotationBetweenJoints(
                 getJointVec(bones[0], bones[1], joints),
                 getJointVec(bones[0], bones[1], this.originalJoints),
                 parentRotation);
+                console.log("rot " + JSON.stringify(rot));
         } else if (bones.length >2) {
             let rot1 = getRotationBetweenJoints(
                 getJointVec(bones[0], bones[1], joints),
                 getJointVec(bones[0], bones[1], this.originalJoints),
                 parentRotation);
+                console.log("rot1 " + JSON.stringify(rot1));
             let rot2 = getRotationBetweenJoints(
                 getJointVec(bones[0], bones[2], joints),
                 getJointVec(bones[0], bones[2], this.originalJoints),
                 parentRotation);
+                console.log("rot1 " + JSON.stringify(rot2));
             let quat = new THREE.Quaternion();
             THREE.Quaternion.slerp(rot1.q, rot2.q,quat, 0.5);
         	var eul = new THREE.Euler();
@@ -126,11 +128,9 @@ export default class SkeletonConverter {
             }
         	globalRotation.multiply(quat);
             rot = {x: eul._x, y: eul._y, z: eul._z, globalRotation:globalRotation};
-        } else {
-
+            console.log("rot12 " + JSON.stringify( rot));
         }
 
-        console.log("Three for sub "+subskeleton.name);
         var angleMult = 180/Math.PI; // really?
         definition += angleMult * rot.y + " " + angleMult * rot.x + " " + angleMult * rot.z + " ";
         definition = subskeleton.children().reduce((def, subsub) => {
@@ -216,6 +216,9 @@ function dictionarifyJoints(joints : Array<KinectJoint>) : JointMap {
 var getRotationBetweenJoints = function(threeJointOriginal_in, threeJoint1_in, parentRotation) {
 	if (!threeJointOriginal_in) throw new Error("No orig");
 	if (!threeJoint1_in) throw new Error("No 1");
+
+        console.log ("joints be "+JSON.stringify(threeJointOriginal_in));
+        console.log ("          "+JSON.stringify(threeJoint1_in));
 
 	// rotate joint1 by -parentRotation, so that it is in the same reference frame
 	// as jointOriginal would have been
