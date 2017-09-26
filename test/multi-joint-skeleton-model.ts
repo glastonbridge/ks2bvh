@@ -9,8 +9,18 @@ export default class MultiJointSkeletonModel extends SkeletonModel {
 	constructor() {
 		super({
 			name: "shoulder",
-			tree: {"LeftArm":{"LeftHand":{}},"RightArm":{"RightHand":{}}},
-			jointTranslator: function(name :string) : Array<string> {return [name];},
+			tree: {"LeftArm":{},"RightArm":{}},
+			jointTranslator: function(name :string) : Array<string> {
+                switch (name) {
+                case "shoulder":
+                    return ["shoulder", "LeftArm", "RightArm"];
+                case "LeftArm":
+                    return ["LeftArm", "LeftHand"];
+                case "RightArm":
+                    return ["RightArm", "RightHand"];
+                }
+                return [name];
+            },
             rootLimb: "shoulder"
 		});
 	}

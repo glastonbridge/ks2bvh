@@ -32,43 +32,37 @@ export default class SkeletonConverter {
      *   else if it has no children
      *     write end joint
 	 */
-	recursivelyCaptureLimbs(subskeleton, joints, parentOffset, indent) {
+	recursivelyCaptureLimbs(subskeleton : SkeletonModel, joints : JointMap, parentOffset : KinectVector, indent:number) {
 		var isp = this.INDENT_BY.repeat(indent);
 		var isp2 = this.INDENT_BY.repeat(indent+1);
 		var definition = "";
 		const self = this;
+        let myOffset = offsetOfJoint(subskeleton, joints);
 		if (subskeleton.isRoot()) {
-            let myOffset = offsetOfJoint(subskeleton, joints);
-			// this is the root
-			// Note that we need to go into reverse as well as forward for the root (see above)
-			definition += "ROOT "+subskeleton.name+"\n";
-			definition += "{\n";
-			definition += writeOffset(1, myOffset, parentOffset,this.INDENT_BY);
-			definition += "  CHANNELS 6 Xposition Yposition Zposition Zrotation Xrotation Yrotation\n";
-			subskeleton.children().forEach((subskeleton2) => {
-				definition += this.recursivelyCaptureLimbs(subskeleton2,joints, myOffset,2);
-			});
-			definition += "}\n";
-		} else if (subskeleton.isEndSite()) {
-			definition += isp+"JOINT "+subskeleton.name + "\n";
+			definition += isp + "ROOT "+subskeleton.name+"\n";
+			definition += isp + "{\n";
+			definition += writeOffset(indent+1, myOffset, parentOffset,this.INDENT_BY);
+			definition += isp2 + "CHANNELS 6 Xposition Yposition Zposition Zrotation Xrotation Yrotation\n";
+        } else {
+            definition += isp+"JOINT "+subskeleton.name + "\n";
 			definition += isp +"{\n";
-            definition += writeOffset(indent+1, offsetOfJoint(subskeleton, joints), parentOffset,self.INDENT_BY);
-			definition += isp2 +"End Site\n";
+			definition += writeOffset(indent+1, offsetOfJoint(subskeleton, joints), parentOffset,self.INDENT_BY);
+            definition += isp2 + "CHANNELS 3 Zrotation Xrotation Yrotation\n";
+        }
+
+        if (subskeleton.isEndSite()) {
+            definition += isp2 +"End Site\n";
 			definition += isp2 +"{\n";
 			//console.log("EndSite:"+subskeleton.name+", P:"+JSON.stringify(joints[subskeleton.name].Position));
 			definition += writeOffset(indent+2, offsetOfJointEnd(subskeleton, joints), parentOffset,self.INDENT_BY); // TODO: end sites for all children
 			definition += isp2 +"}\n";
-            definition += isp +"}\n";
-		} else {
-			definition += isp+"JOINT "+subskeleton.name + "\n";
-			definition += isp +"{\n";
-			definition += writeOffset(indent+1, offsetOfJoint(subskeleton, joints), parentOffset,self.INDENT_BY);
-			definition += isp2 + "CHANNELS 3 Zrotation Xrotation Yrotation\n";
-			subskeleton.children().forEach(function(subskeleton2) {
-				definition += self.recursivelyCaptureLimbs(subskeleton2, joints, joints[subskeleton.name].Position, indent +1);
+        } else {
+			subskeleton.children().forEach((subskeleton2) => {
+				definition += this.recursivelyCaptureLimbs(subskeleton2,joints, myOffset,indent+1);
 			});
-			definition += isp +"}\n";
-		}
+        }
+        definition += isp +"}\n";
+
 		return definition;
 	}
 
@@ -87,7 +81,7 @@ export default class SkeletonConverter {
 		var rootOffset = {X:0,Y:0,Z:0};
 
 		var definition = "HIERARCHY\n";
-		definition += this.recursivelyCaptureLimbs(root,joints, rootOffset,2);
+		definition += this.recursivelyCaptureLimbs(root,joints, rootOffset,0);
 
 		definition += "MOTION\n";
 		definition += "Frames: " + this.goodFrames.length + "\n";
@@ -104,6 +98,8 @@ export default class SkeletonConverter {
         var rot;
         if (bones.length === 0) {
             return definition;
+        } else if (bones.length ===1) {
+            throw new Error("Bones have a minimum of two ends. "+subskeleton.name+" had none.");
         } else if (bones.length ===2) {
             let subsub = bones[0];
             rot = getRotationBetweenJoints(
@@ -131,7 +127,7 @@ export default class SkeletonConverter {
         	globalRotation.multiply(quat);
             rot = {x: eul._x, y: eul._y, z: eul._z, globalRotation:globalRotation};
         } else {
-            //throw new Error("A subskeleton can have 0, 1, or 2 children. Subskeleton \""+subskeleton.name+"\" had "+children.length);
+
         }
 
         console.log("Three for sub "+subskeleton.name);

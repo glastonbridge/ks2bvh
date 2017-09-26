@@ -7,7 +7,7 @@ import SkeletonConverter from '../build/SkeletonConverter';
 import {SkeletonFrame} from "../build/KinectTypes";
 import * as assert from "assert";
 
-describe.only('Convert', () => {
+describe('Convert', () => {
   it('should convert a rotation with several joints to an average of their euclidian position', function() {
 		let skeletonModel = new ComplexJointSkeletonModel();
 		let converter = new SkeletonConverter({skeletonModel: skeletonModel});

@@ -37,10 +37,10 @@ ROOT shoulder
 {
   OFFSET 0 0 0
   CHANNELS 6 Xposition Yposition Zposition Zrotation Xrotation Yrotation
-    End Site
-    {
-      OFFSET 1 0 0
-    }
+  End Site
+  {
+    OFFSET 1 0 0
+  }
 }
 MOTION
 Frames: 2
@@ -95,24 +95,24 @@ ROOT shoulder
 {
   OFFSET 0 0 0
   CHANNELS 6 Xposition Yposition Zposition Zrotation Xrotation Yrotation
-    JOINT LeftArm
+  JOINT LeftArm
+  {
+    OFFSET -1 0 0
+    CHANNELS 3 Zrotation Xrotation Yrotation
+    End Site
     {
-      OFFSET -1 0 0
-      CHANNELS 3 Zrotation Xrotation Yrotation
-      End Site
-      {
-        OFFSET 0 1 0
-      }
+      OFFSET -1 1 0
     }
-    JOINT RightArm
+  }
+  JOINT RightArm
+  {
+    OFFSET 1 0 0
+    CHANNELS 3 Zrotation Xrotation Yrotation
+    End Site
     {
-      OFFSET 1 0 0
-      CHANNELS 3 Zrotation Xrotation Yrotation
-      End Site
-      {
-        OFFSET 0 1 0
-      }
+      OFFSET 1 1 0
     }
+  }
 }\n` +
 `MOTION
 Frames: 2
