@@ -1,12 +1,12 @@
 #!/usr/bin/env node
 // jshint esversion: 6
 
-const SkeletonConverter = require('./skeleton-converter');
-const Kinect2SkeletonModel = require('./kinect2-skeleton-model');
+const SkeletonConverter = require('./build/SkeletonConverter').default;
+const Kinect1SkeletonModel = require('./build/Kinect1SkeletonModel').default;
 const fs = require('fs');
 const process = require('process');
 
-let skeletonModel = new Kinect2SkeletonModel();
+let skeletonModel = new Kinect1SkeletonModel();
 let converter = new SkeletonConverter({skeletonModel: skeletonModel});
 
 console.log(JSON.stringify(process.argv));
