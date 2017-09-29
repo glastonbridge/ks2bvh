@@ -1,6 +1,6 @@
 // jshint esversion: 6
 
-import THREE = require('three');
+import THREE = require ('three');
 
 import SkeletonModel from "./SkeletonModel";
 
@@ -37,7 +37,7 @@ export default class SkeletonConverter {
 		var isp2 = this.INDENT_BY.repeat(indent+1);
 		var definition = "";
 		const self = this;
-        let myOffset = offsetOfJoint(subskeleton, joints);
+        let myOffset = positionOfJointStart(subskeleton, joints);
 		if (subskeleton.isRoot()) {
 			definition += isp + "ROOT "+subskeleton.name+"\n";
 			definition += isp + "{\n";
@@ -46,7 +46,7 @@ export default class SkeletonConverter {
         } else {
             definition += isp+"JOINT "+subskeleton.name + "\n";
 			definition += isp +"{\n";
-			definition += writeOffset(indent+1, offsetOfJoint(subskeleton, joints), parentOffset,self.INDENT_BY);
+			definition += writeOffset(indent+1, positionOfJointStart(subskeleton, joints), parentOffset,self.INDENT_BY);
             definition += isp2 + "CHANNELS 3 Zrotation Xrotation Yrotation\n";
         }
 
@@ -54,7 +54,7 @@ export default class SkeletonConverter {
             definition += isp2 +"End Site\n";
 			definition += isp2 +"{\n";
 			//console.log("EndSite:"+subskeleton.name+", P:"+JSON.stringify(joints[subskeleton.name].Position));
-			definition += writeOffset(indent+2, offsetOfJointEnd(subskeleton, joints), parentOffset,self.INDENT_BY); // TODO: end sites for all children
+			definition += writeOffset(indent+2, positionOfJointEnd(subskeleton, joints), myOffset,self.INDENT_BY); // TODO: end sites for all children
 			definition += isp2 +"}\n";
         } else {
 			subskeleton.children().forEach((subskeleton2) => {
@@ -131,18 +131,24 @@ export default class SkeletonConverter {
         }
 
         var angleMult = 180/Math.PI; // really?
-        definition += angleMult * rot.y + " " + angleMult * rot.x + " " + angleMult * rot.z + " ";
+        definition += -angleMult * rot.z + " " + angleMult * rot.x + " " + angleMult * rot.y + " ";
         definition = subskeleton.children().reduce((def, subsub) => {
             return def + self.recursivelyMoveJoints(subsub, joints, rot.globalRotation);
         }, definition);
         return definition;
     }
 
-	convert (frame) {
+	convert (frame : SkeletonFrame) : string {
 		if (frame.Skeletons.length <1) return undefined;
-		var joints = dictionarifyJoints(frame.Skeletons[0].Joints);
-        // initial position of root doesn't change (yet)
-		var newFrame = "0 0 0 "+this.recursivelyMoveJoints(this.skeletonModel, joints);
+		let joints : JointMap = dictionarifyJoints(frame.Skeletons[0].Joints);
+        let originalStartingPosition : KinectVector = this.originalJoints[this.skeletonModel.translatedPoints()[0]].Position;
+        let currentStartingPosition : KinectVector = joints[this.skeletonModel.translatedPoints()[0]].Position;
+        let deltaStartingPosition : KinectVector = <KinectVector>["X","Y","Z"].reduce((acc,it) => {
+            acc[it]=currentStartingPosition[it]-originalStartingPosition[it];
+            return acc;
+        },{});
+		var newFrame : string = ""+deltaStartingPosition.X+" "+deltaStartingPosition.Y+" "+deltaStartingPosition.Z+" ";
+        newFrame += this.recursivelyMoveJoints(this.skeletonModel, joints);
 		this.goodFrames.push(newFrame);
 		return newFrame;
 	}
@@ -156,24 +162,20 @@ export default class SkeletonConverter {
 // Utility functions
 
 
-function offsetOfJoint(subskeleton : SkeletonModel, joints: JointMap) : KinectVector {
+function positionOfJointStart(subskeleton : SkeletonModel, joints: JointMap) : KinectVector {
     let searchPoint : string = subskeleton.translatedPoints()[0];
     if (!joints[searchPoint]) throw new Error("Joint map does not contain joint "+ searchPoint + " for skeleton "+subskeleton.name);
     return joints[searchPoint].Position;
 }
 
-function offsetOfJointEnd(subskeleton : SkeletonModel, joints: JointMap) : KinectVector {
-    // TODO: fill out for all points
+function positionOfJointEnd(subskeleton : SkeletonModel, joints: JointMap) : KinectVector {
     let searchPoint : string = subskeleton.translatedPoints()[1];
     if (!joints[searchPoint]) throw new Error("Joint map does not contain joint "+ searchPoint + " for skeleton "+subskeleton.name);
     return joints[searchPoint].Position;
 }
 
-function writeOffset(indent, position,parentPosition, indentString) {
-	if (!indentString) {
-		indentString = parentPosition;
-		parentPosition = {X:0,Y:0,Z:0};
-	}
+function writeOffset(indent : number, position: KinectVector,parentPosition: KinectVector, indentString : string) {
+
 	return indentString.repeat(indent) + "OFFSET "+
 		(position.X-parentPosition.X)+ " "+
 		(position.Y-parentPosition.Y)+ " "+
@@ -213,13 +215,15 @@ var getRotationBetweenJoints = function(threeJointOriginal_in, threeJoint1_in, p
 	if (!threeJointOriginal_in) throw new Error("No orig");
 	if (!threeJoint1_in) throw new Error("No 1");
 
+    var threeJointOriginal = new THREE.Vector3();
+    threeJointOriginal.copy(threeJointOriginal_in);
+
+
 	// rotate joint1 by -parentRotation, so that it is in the same reference frame
 	// as jointOriginal would have been
 
 	var threeJoint1 = new THREE.Vector3();
 	threeJoint1.copy(threeJoint1_in);
-	var threeJointOriginal = new THREE.Vector3();
-	threeJointOriginal.copy(threeJointOriginal_in);
 	threeJoint1.applyQuaternion(parentRotation.inverse());
 
 	// get a quaternion representing the angle between the two joints

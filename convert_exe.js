@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 // jshint esversion: 6
+require('source-map-support').install();
 
 const SkeletonConverter = require('./build/SkeletonConverter').default;
 const Kinect1SkeletonModel = require('./build/Kinect1SkeletonModel').default;
