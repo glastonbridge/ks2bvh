@@ -2,7 +2,7 @@
   "name": "kinect2bvh",
   "version": "0.0.1",
   "description": "Convert data from ReadySaltedCode KinectJSON server to BVH format",
-  "main": "index.js",
+  "main": "build/index.js",
   "scripts": {
     "pretest": "tsc && cd test && tsc",
     "test": "mocha"

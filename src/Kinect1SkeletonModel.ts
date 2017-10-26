@@ -11,7 +11,8 @@ export default class Kinect1SkeletonModel extends SkeletonModel {
 			name: "Hips",
 			tree: GAMERIG_SKELETON_MODEL,
 			jointTranslator: mapBvhToKinect1,
-            rootLimb:"Hips"
+            rootLimb:"Hips",
+            jointRotationAxes: GAMERIG_JOINT_ROTATION_AXES
 		});
 	}
 }
@@ -48,6 +49,19 @@ const GAMERIG_SKELETON_MODEL = {
                 "LeftFoot": {}
             }
         }
+}
+
+const GAMERIG_JOINT_ROTATION_AXES = {
+    "RightArm": "YZ",
+    "RightForeArm": "YZ",
+    "LeftArm": "YZ",
+    "LeftForeArm": "YZ",
+
+    "RightUpLeg": "XY",
+    "RightLeg": "XY",
+    "LeftUpLeg": "XY",
+    "LeftLeg": "XY",
+    "LeftFoot": "XY"
 }
 
 function mapBvhToKinect1(name: string) : string[] {
