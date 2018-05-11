@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Convert data from ReadySaltedCode KinectJSON server to BVH format",
   "main": "build/index.js",
+  "directories" : {"lib":"build"},
   "scripts": {
     "pretest": "tsc && cd test && tsc",
     "test": "mocha"

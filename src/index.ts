@@ -1,4 +1,4 @@
 export * from "./KinectTypes";
-export * from "./SkeletonConverter";
-export * from "./SkeletonModel";
-export * from "./Kinect1SkeletonModel";
+export {default as SkeletonConverter, getRotationBetweenJoints} from "./SkeletonConverter";
+export {default as SkeletonModel} from "./SkeletonModel";
+export {default as Kinect1SkeletonModel} from "./Kinect1SkeletonModel";

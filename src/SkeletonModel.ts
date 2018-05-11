@@ -4,7 +4,17 @@ export interface SkeletonConfiguration {
     jointTranslator: (name: string)=>Array<string>,
     tree: object,
     rootLimb : string,
-    jointRotationAxes: {[joint: string] : string}
+    jointRotationAxes: {[joint: string] : string},
+    getDefaultJointDefaultPoseDirection: ()=>Vector3
+}
+
+// There are two other definitions of Vector3
+// The one in KinectTypes is strictly for defining Microsoft-style vectors (capital X Y Z)
+// There is also THREE.js vectors, which are a more heavyweight class (though it should implement this type if necessary)
+export interface Vector3 {
+    x: number,
+    y: number,
+    z: number
 }
 
 /**
@@ -24,6 +34,7 @@ export default class SkeletonModel {
     tree: object;
     jointTranslator: (string)=>Array<string>;
     jointRotationAxes: {[joint:string] : string};
+    getDefaultJointDefaultPoseDirection: () => Vector3;
 	constructor(skeletonConfiguration : SkeletonConfiguration) {
         Object.keys(skeletonConfiguration).forEach((k)=> {
             this[k] = skeletonConfiguration[k];
@@ -38,7 +49,8 @@ export default class SkeletonModel {
 			tree: this.tree[jointName],
 			jointTranslator: this.jointTranslator,
             rootLimb: this.rootLimb,
-            jointRotationAxes: this.jointRotationAxes
+            jointRotationAxes: this.jointRotationAxes,
+            getDefaultJointDefaultPoseDirection: this.getDefaultJointDefaultPoseDirection
 		});
 	}
 	translatedPoints() {
@@ -64,4 +76,9 @@ export default class SkeletonModel {
         return this.name == this.rootLimb;
     }
 
+
 }
+
+const defaultJointDefaultPoseDirection = function() : Vector3 {
+        return {x:0,y:0,z:0}; // Default pose direction is nowhere! Subclass this
+    }

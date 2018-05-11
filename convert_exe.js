@@ -2,6 +2,7 @@
 // jshint esversion: 6
 require('source-map-support').install();
 
+const SkeletonRegulariser = require('./build/SkeletonRegulariser').default;
 const SkeletonConverter = require('./build/SkeletonConverter').default;
 const Kinect1SkeletonModel = require('./build/Kinect1SkeletonModel').default;
 const fs = require('fs');
@@ -17,7 +18,6 @@ let jsonSkeletons = JSON.parse(fs.readFileSync(process.argv[2]));
 console.log("Parsed input");
 
 for (var i = 0; i < jsonSkeletons.length; ++i) {
-	console.log(jsonSkeletons[i].Skeletons.length);
 	if (jsonSkeletons[i].Skeletons && jsonSkeletons[i].Skeletons.length>0) {
 		break;
 	}
@@ -28,7 +28,9 @@ if (i >= jsonSkeletons.length) {
 	process.exit(1);
 }
 
-converter.captureInitialJoints(jsonSkeletons[i]);
+let initialFrame = SkeletonRegulariser(skeletonModel, jsonSkeletons);
+converter.captureInitialJoints(initialFrame);
+
 for (i = 0; i < jsonSkeletons.length; ++i) {
 	converter.convert(jsonSkeletons[i]);
 }
